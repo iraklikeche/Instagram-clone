@@ -1,17 +1,27 @@
 <script setup>
 import { ref } from "vue";
+import { useUserStore } from "../stores/users";
+import { storeToRefs } from "pinia";
 
+const userStore = useUserStore();
+
+const { errorMsg } = storeToRefs(userStore);
 const props = defineProps(["isLogin"]);
 
 const visible = ref(false);
+
+const userCredentials = ref({
+  email: "",
+  password: "",
+  usename: "",
+});
 
 const showModal = () => {
   visible.value = true;
 };
 
 const handleOk = (e) => {
-  console.log(e);
-  visible.value = false;
+  userStore.handleSignUp(userCredentials.value);
 };
 
 const title = props.isLogin ? "Login" : "Sign Up";
@@ -24,11 +34,23 @@ const title = props.isLogin ? "Login" : "Sign Up";
       <a-input
         class="input"
         v-if="!isLogin"
-        v-model:value="value"
+        v-model:value="userCredentials.username"
         placeholder="Username"
       />
-      <a-input class="input" v-model:value="value" placeholder="email" />
-      <a-input class="input" v-model:value="value" placeholder="password" />
+      <a-input
+        class="input"
+        v-model:value="userCredentials.email"
+        placeholder="email"
+      />
+      <a-input
+        type="password"
+        class="input"
+        v-model:value="userCredentials.password"
+        placeholder="password"
+      />
+      <a-typography-text v-if="errorMsg" type="danger">{{
+        errorMsg
+      }}</a-typography-text>
     </a-modal>
   </div>
 </template>
