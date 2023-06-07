@@ -1,7 +1,4 @@
 <script setup>
-import { defineProps } from "vue";
-import TimeLine from "./TimeLine.vue";
-
 const props = defineProps(["post"]);
 </script>
 
