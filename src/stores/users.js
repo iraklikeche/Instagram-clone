@@ -1,5 +1,6 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
+import { supabase } from "../supabase";
 
 export const useUserStore = defineStore("users", () => {
   const user = ref(null);
@@ -14,11 +15,10 @@ export const useUserStore = defineStore("users", () => {
 
   const handleLogin = () => {};
 
-  const handleSignUp = (credentials) => {
+  const handleSignUp = async (credentials) => {
     const { email, password, username } = credentials;
 
     if (password.length < 6) {
-      console.log("too small");
       return (errorMsg.value = "Password length is too short");
     }
 
@@ -31,6 +31,19 @@ export const useUserStore = defineStore("users", () => {
     }
 
     errorMsg.value = "";
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    if (error) {
+      return (errorMsg.value = error.message);
+    }
+
+    await supabase.from("users").insert({
+      username,
+      email,
+    });
   };
 
   const handleLoginOut = () => {};
