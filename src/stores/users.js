@@ -5,6 +5,9 @@ import { supabase } from "../supabase";
 export const useUserStore = defineStore("users", () => {
   const user = ref(null);
   const errorMsg = ref("");
+  const loading = ref(false)
+
+
   const validateEmail = (email) => {
     return String(email)
       .toLowerCase()
@@ -30,6 +33,9 @@ export const useUserStore = defineStore("users", () => {
       return (errorMsg.value = "Email is invalid");
     }
 
+    // LOADING
+    loading.value = true
+
     // VALIDATE IF USER EXISTS
 
     const { data: userWithUsername } = await supabase
@@ -39,6 +45,7 @@ export const useUserStore = defineStore("users", () => {
       .single();
 
     if (userWithUsername) {
+      loading.value = false
       return (errorMsg.value = "User already registered");
     }
 
@@ -52,6 +59,7 @@ export const useUserStore = defineStore("users", () => {
     });
 
     if (error) {
+      loading.value = false
       return (errorMsg.value = error.message);
     }
 
@@ -59,18 +67,26 @@ export const useUserStore = defineStore("users", () => {
       username,
       email,
     });
+
+    loading.value = false
   };
 
   const handleLoginOut = () => {};
 
   const handleGetUSer = () => {};
 
+  const clearErrorMsg = () => {
+    errorMsg.value = "";
+  };
+
   return {
     user,
+    loading,
     handleLogin,
     handleSignUp,
     handleLoginOut,
     handleGetUSer,
     errorMsg,
+    clearErrorMsg,
   };
 });
