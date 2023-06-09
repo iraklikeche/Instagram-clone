@@ -28,7 +28,14 @@ const clearUserCredentianlsInput = () => {
 };
 
 const handleOk = async () => {
-  await userStore.handleSignUp(userCredentials.value);
+  if (props.isLogin) {
+    await userStore.handleLogin({
+      password: userCredentials.value.password,
+      email: userCredentials.value.email,
+    });
+  } else {
+    await userStore.handleSignUp(userCredentials.value);
+  }
   if (user.value) {
     visible.value = false;
     clearUserCredentianlsInput();
@@ -46,6 +53,7 @@ const title = props.isLogin ? "Login" : "Sign Up";
 <template>
   <div>
     <a-button type="primary" @click="showModal">{{ title }}</a-button>
+    {{ user }}
     <a-modal v-model:visible="visible" :title="title" @ok="handleOk">
       <template #footer>
         <a-button key="back" @click="handleCancel">Cancel</a-button>
