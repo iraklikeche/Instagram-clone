@@ -6,7 +6,7 @@ export const useUserStore = defineStore("users", () => {
   const user = ref(null);
   const errorMsg = ref("");
   const loading = ref(false);
-
+  const loadingUser = ref(false);
   const validateEmail = (email) => {
     return String(email)
       .toLowerCase()
@@ -119,27 +119,31 @@ export const useUserStore = defineStore("users", () => {
 
     loading.value = false;
   };
-
+  // LOG OUT
   const handleLogOut = () => {};
 
   // PERSIST THE LOGIN STATE
   const handleGetUSer = async () => {
-    loading.value = true;
+    loadingUser.value = true;
     const { data } = await supabase.auth.getUser();
+    if (!data.user) {
+      loadingUser.value = false;
+      return (user.value = null);
+    }
     const { data: userWithEmail } = await supabase
       .from("users")
       .select()
       .eq("email", data.user.email)
       .single();
-
     user.value = {
       username: userWithEmail.username,
       email: userWithEmail.email,
       id: userWithEmail.id,
     };
-    loading.value = false;
+    loadingUser.value = false;
   };
 
+  // remove error MSG
   const clearErrorMsg = () => {
     errorMsg.value = "";
   };
@@ -153,5 +157,6 @@ export const useUserStore = defineStore("users", () => {
     handleGetUSer,
     errorMsg,
     clearErrorMsg,
+    loadingUser,
   };
 });

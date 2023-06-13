@@ -3,10 +3,15 @@ import { RouterLink, useRouter } from "vue-router";
 import Container from "./Container.vue";
 import AuthModal from "./AuthModal.vue";
 import { ref } from "vue";
+import { useUserStore } from "../stores/users";
+import { storeToRefs } from "pinia";
+
+const userStore = useUserStore();
+
+const { user } = storeToRefs(userStore);
 
 const router = useRouter();
 const searchUserName = ref("");
-const isAuthenticated = ref(false);
 
 const onSearch = () => {
   if (searchUserName.value) {
@@ -29,11 +34,11 @@ const onSearch = () => {
             @search="onSearch"
           />
         </div>
-        <div class="left-content" v-if="!isAuthenticated">
+        <div class="left-content" v-if="!user">
           <AuthModal :isLogin="false" />
           <AuthModal :isLogin="true" />
         </div>
-        <div class="left-content" v-else="isAuthenticated">
+        <div class="left-content" v-else="user">
           <AButton type="primary">Profile</AButton>
           <AButton type="primary">Logout</AButton>
         </div>
