@@ -120,12 +120,17 @@ export const useUserStore = defineStore("users", () => {
     loading.value = false;
   };
   // LOG OUT
-  const handleLogOut = () => {};
+  const handleLogOut = async () => {
+    await supabase.auth.signOut();
+    user.value = null;
+  };
 
   // PERSIST THE LOGIN STATE
   const handleGetUSer = async () => {
     loadingUser.value = true;
     const { data } = await supabase.auth.getUser();
+
+    // To avoid Error of "can not read propertius of null (reading "email")
     if (!data.user) {
       loadingUser.value = false;
       return (user.value = null);
