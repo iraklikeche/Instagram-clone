@@ -8,7 +8,7 @@ import { storeToRefs } from "pinia";
 
 const userStore = useUserStore();
 
-const { user } = storeToRefs(userStore);
+const { user, loadingUser } = storeToRefs(userStore);
 
 const router = useRouter();
 const searchUserName = ref("");
@@ -34,13 +34,15 @@ const onSearch = () => {
             @search="onSearch"
           />
         </div>
-        <div class="left-content" v-if="!user">
-          <AuthModal :isLogin="false" />
-          <AuthModal :isLogin="true" />
-        </div>
-        <div class="left-content" v-else="user">
-          <AButton type="primary">Profile</AButton>
-          <AButton type="primary">Logout</AButton>
+        <div v-if="!loadingUser">
+          <div class="left-content" v-if="!user">
+            <AuthModal :isLogin="false" />
+            <AuthModal :isLogin="true" />
+          </div>
+          <div class="left-content" v-else="user">
+            <AButton type="primary">Profile</AButton>
+            <AButton type="primary">Logout</AButton>
+          </div>
         </div>
       </div>
     </Container>
