@@ -120,9 +120,25 @@ export const useUserStore = defineStore("users", () => {
     loading.value = false;
   };
 
-  const handleLoginOut = () => {};
+  const handleLogOut = () => {};
 
-  const handleGetUSer = () => {};
+  // PERSIST THE LOGIN STATE
+  const handleGetUSer = async () => {
+    loading.value = true;
+    const { data } = await supabase.auth.getUser();
+    const { data: userWithEmail } = await supabase
+      .from("users")
+      .select()
+      .eq("email", data.user.email)
+      .single();
+
+    user.value = {
+      username: userWithEmail.username,
+      email: userWithEmail.email,
+      id: userWithEmail.id,
+    };
+    loading.value = false;
+  };
 
   const clearErrorMsg = () => {
     errorMsg.value = "";
@@ -133,7 +149,7 @@ export const useUserStore = defineStore("users", () => {
     loading,
     handleLogin,
     handleSignUp,
-    handleLoginOut,
+    handleLogOut,
     handleGetUSer,
     errorMsg,
     clearErrorMsg,
