@@ -8,6 +8,10 @@ import { storeToRefs } from "pinia";
 
 const userStore = useUserStore();
 
+/*  with "user" we check if we are authenticated or not,
+    we go to userStore grab "user" and if we have value for the user,
+    we are indeed authenticated, if null - not authenticated */
+
 const { user, loadingUser } = storeToRefs(userStore);
 
 const router = useRouter();

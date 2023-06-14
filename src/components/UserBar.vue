@@ -1,4 +1,15 @@
 <script setup>
+import UploadPhotoModal from "./UploadPhotoModal.vue";
+import { useRoute } from "vue-router";
+import { useUserStore } from "../stores/users";
+import { storeToRefs } from "pinia";
+
+const route = useRoute();
+const userStore = useUserStore();
+
+const { user } = storeToRefs(userStore);
+const { username: profileUsername } = route.params;
+
 const props = defineProps(["username", "userInfo"]);
 </script>
 
@@ -6,6 +17,8 @@ const props = defineProps(["username", "userInfo"]);
   <div class="userbar-container">
     <div class="top-content">
       <a-typography-title :level="2">{{ props.username }}</a-typography-title>
+      <!-- To show "Upload Photo" button only when we are logged in and on our profile -->
+      <UploadPhotoModal v-if="user && profileUsername === user.username" />
     </div>
     <div class="bottom-content">
       <a-typography-title :level="5"
@@ -35,5 +48,11 @@ const props = defineProps(["username", "userInfo"]);
   margin: 0;
   padding: 0;
   margin-right: 30px;
+}
+
+.top-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>

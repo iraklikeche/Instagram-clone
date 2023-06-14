@@ -4,10 +4,14 @@ import UserBar from "./UserBar.vue";
 import ImageGallery from "./ImageGallery.vue";
 </script>
 
+/* :key="$route.params.username" to rerender the page so that when we type in
+search bar username to make "Upload Photo" disappear */
+
 <template>
   <Container>
     <div class="profile-container">
       <UserBar
+        :key="$route.params.username"
         username="IrakliKeche"
         :userInfo="{
           posts: 4,
