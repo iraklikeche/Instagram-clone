@@ -1,6 +1,12 @@
 <script setup>
 import { ref } from "vue";
 import { supabase } from "../supabase";
+import { useUserStore } from "../stores/users";
+import { storeToRefs } from "pinia";
+
+const userStore = useUserStore();
+
+const { user } = storeToRefs(userStore);
 
 const visible = ref(false);
 const caption = ref("");
@@ -13,10 +19,17 @@ const showModal = () => {
 const handleOk = async () => {
   const fileName = Math.floor(Math.random() * 1000000000000000);
   if (file.value) {
-    const response = await supabase.storage
+    const { data, error } = await supabase.storage
       .from("images")
       .upload("public/" + fileName, file.value);
-    console.log({ response });
+    if (data) {
+      const response = await supabase.from("posts").insert({
+        url: data.path,
+        caption: caption.value,
+        owner_id: user.value.id,
+      });
+      console.log({ response });
+    }
   }
 };
 
