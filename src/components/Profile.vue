@@ -23,6 +23,11 @@ const addNewPost = (post) => {
   posts.value.unshift(post);
 };
 
+// To update follow/following button, we take boolean as an argument, then pass it to child through props
+const updateIsFollwing = (follow) => {
+  isFollowing.value = follow;
+};
+
 const fetchData = async () => {
   loading.value = true;
   const { data: userData } = await supabase
@@ -94,6 +99,7 @@ search bar username to make "Upload Photo" disappear */
         }"
         :addNewPost="addNewPost"
         :isFollowing="isFollowing"
+        :updateIsFollwing="updateIsFollwing"
       />
       <ImageGallery :posts="posts" />
     </div>

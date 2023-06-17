@@ -17,14 +17,25 @@ const props = defineProps([
   "userInfo",
   "addNewPost",
   "isFollowing",
+  "updateIsFollwing",
 ]);
 
 // Following function
 const followUser = async () => {
+  props.updateIsFollwing(true);
   await supabase.from("followers_following").insert({
     follower_id: user.value.id,
     following_id: props.user.id,
   });
+};
+
+const unFollowUser = async () => {
+  props.updateIsFollwing(false);
+  await supabase
+    .from("followers_following")
+    .delete()
+    .eq("follower_id,", user.value.id)
+    .eq("following_id", props.user.id);
 };
 </script>
 
@@ -45,7 +56,7 @@ const followUser = async () => {
           <AButton v-if="!props.isFollowing" @click="followUser"
             >Follow</AButton
           >
-          <AButton v-else @click="followUser">Following</AButton>
+          <AButton v-else @click="unFollowUser">Following</AButton>
         </div>
       </div>
     </div>
