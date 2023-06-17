@@ -18,6 +18,7 @@ const { user: LoggedInUser } = storeToRefs(userStore);
 const posts = ref([]);
 const user = ref(null);
 const loading = ref(false);
+const userInfo = ref({ posts: null, followers: null, following: null });
 
 const addNewPost = (post) => {
   posts.value.unshift(post);
@@ -51,8 +52,32 @@ const fetchData = async () => {
   posts.value = postData;
 
   await fetchIsFollowing();
+  const followerCount = await fetchFollowersCount();
+  const followingCount = await fetchFollowingCount();
+
+  userInfo.value.followers = followerCount;
+  userInfo.value.following = followingCount;
+  userInfo.value.posts = posts.value.length;
 
   loading.value = false;
+};
+
+const fetchFollowersCount = async () => {
+  const { count } = await supabase
+    .from("followers_following")
+    .select("*", { count: "exact" })
+    .eq("following_id", user.value.id);
+
+  return count;
+};
+
+const fetchFollowingCount = async () => {
+  const { count } = await supabase
+    .from("followers_following")
+    .select("*", { count: "exact" })
+    .eq("follower_id", user.value.id);
+
+  return count;
 };
 
 const fetchIsFollowing = async () => {
@@ -92,11 +117,7 @@ search bar username to make "Upload Photo" disappear */
       <UserBar
         :key="$route.params.username"
         :user="user"
-        :userInfo="{
-          posts: 4,
-          followers: 432,
-          following: 234,
-        }"
+        :userInfo="userInfo"
         :addNewPost="addNewPost"
         :isFollowing="isFollowing"
         :updateIsFollwing="updateIsFollwing"
