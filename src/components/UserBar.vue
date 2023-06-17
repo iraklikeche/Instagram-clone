@@ -20,10 +20,14 @@ const props = defineProps(["user", "username", "userInfo", "addNewPost"]);
         props.user.username
       }}</a-typography-title>
       <!-- To show "Upload Photo" button only when we are logged in and on our profile -->
-      <UploadPhotoModal
-        v-if="user && profileUsername === user.username"
-        :addNewPost="addNewPost"
-      />
+      <!-- To check whether we are authenticated or not we use "user" ! ! ! -->
+      <div v-if="user">
+        <UploadPhotoModal
+          v-if="profileUsername === user.username"
+          :addNewPost="addNewPost"
+        />
+        <AButton v-else>Follow</AButton>
+      </div>
     </div>
     <div class="bottom-content">
       <a-typography-title :level="5"
