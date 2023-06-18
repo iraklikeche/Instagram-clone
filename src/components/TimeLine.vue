@@ -1,6 +1,12 @@
 <script setup>
 import Container from "./Container.vue";
 import Card from "./Card.vue";
+import { useUserStore } from "../stores/users";
+import { storeToRefs } from "pinia";
+
+const userStore = useUserStore();
+
+const { user, loading } = storeToRefs();
 
 const data = [
   {
@@ -20,8 +26,16 @@ const data = [
 
 <template>
   <Container>
-    <div class="timeline-container">
-      <Card v-for="post in data" :key="post.id" :post="post" />
+    <div v-if="!loadingUser">
+      <div v-if="user" class="timeline-container">
+        <Card v-for="post in data" :key="post.id" :post="post" />
+      </div>
+      <div v-else class="timeline-container">
+        <h2>Log in to see posts</h2>
+      </div>
+    </div>
+    <div class="spinner" v-else>
+      <ASpin />
     </div>
   </Container>
 </template>
