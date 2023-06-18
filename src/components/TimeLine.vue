@@ -6,7 +6,7 @@ import { storeToRefs } from "pinia";
 
 const userStore = useUserStore();
 
-const { user, loading } = storeToRefs();
+const { user, loadingUser } = storeToRefs(userStore);
 
 const data = [
   {
@@ -34,8 +34,8 @@ const data = [
         <h2>Log in to see posts</h2>
       </div>
     </div>
-    <div class="spinner" v-else>
-      <ASpin />
+    <div v-else class="spinner">
+      <ASpin size="large" />
     </div>
   </Container>
 </template>
@@ -47,5 +47,12 @@ const data = [
   align-items: center;
 
   padding: 20px 0;
+}
+
+.spinner {
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
