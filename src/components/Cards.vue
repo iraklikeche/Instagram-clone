@@ -13,6 +13,7 @@ const { user } = storeToRefs(userStore);
 const posts = ref([]);
 const lastCardIndex = ref(2);
 const ownerIds = ref([]);
+const reachEnd = ref(false);
 
 const fetchData = async () => {
   const { data: followings } = await supabase
@@ -33,14 +34,22 @@ const fetchData = async () => {
 };
 
 const fetchNextSet = async () => {
-  const { data } = await supabase
-    .from("posts")
-    .select()
-    .in("owner_id", ownerIds.value)
-    .range(lastCardIndex.value + 1, lastCardIndex.value + 3)
-    .order("created_at", { ascending: false });
+  if (!reachEnd.value) {
+    const { data } = await supabase
+      .from("posts")
+      .select()
+      .in("owner_id", ownerIds.value)
+      .range(lastCardIndex.value + 1, lastCardIndex.value + 3)
+      .order("created_at", { ascending: false });
 
-  posts.value = [...posts.value, ...data];
+    posts.value = [...posts.value, ...data];
+
+    lastCardIndex.value = lastCardIndex.value + 3;
+
+    if (!data.length) {
+      reachEnd.value = true;
+    }
+  }
 };
 
 onMounted(() => {
