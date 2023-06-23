@@ -11,6 +11,8 @@ const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 
 const posts = ref([]);
+const lastCardIndex = ref(2);
+const ownerIds = ref([]);
 
 const fetchData = async () => {
   const { data: followings } = await supabase
@@ -18,19 +20,27 @@ const fetchData = async () => {
     .select("following_id")
     .eq("follower_id", user.value.id);
 
-  const owner_ids = followings.map((f) => f.following_id);
+  ownerIds.value = followings.map((f) => f.following_id);
 
   const { data } = await supabase
     .from("posts")
     .select()
-    .in("owner_id", owner_ids)
+    .in("owner_id", ownerIds.value)
+    .range(0, lastCardIndex.value)
     .order("created_at", { ascending: false });
 
   posts.value = data;
 };
 
-const fetchNextSet = () => {
-  console.log("FETCH NEXT SET");
+const fetchNextSet = async () => {
+  const { data } = await supabase
+    .from("posts")
+    .select()
+    .in("owner_id", ownerIds.value)
+    .range(lastCardIndex.value + 1, lastCardIndex.value + 3)
+    .order("created_at", { ascending: false });
+
+  posts.value = [...posts.value, ...data];
 };
 
 onMounted(() => {
