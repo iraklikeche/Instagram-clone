@@ -3,6 +3,7 @@ import { storeToRefs } from "pinia";
 import { useUserStore } from "../stores/users";
 import { supabase } from "../supabase";
 import Card from "./Card.vue";
+import Observer from "./Observer.vue";
 import { onMounted, ref } from "vue";
 
 const userStore = useUserStore();
@@ -22,9 +23,14 @@ const fetchData = async () => {
   const { data } = await supabase
     .from("posts")
     .select()
-    .in("owner_id", owner_ids);
+    .in("owner_id", owner_ids)
+    .order("created_at", { ascending: false });
 
   posts.value = data;
+};
+
+const fetchNextSet = () => {
+  console.log("FETCH NEXT SET");
 };
 
 onMounted(() => {
@@ -36,6 +42,7 @@ onMounted(() => {
   <div>
     <div class="timeline-container">
       <Card v-for="post in posts" :key="post.id" :post="post" />
+      <Observer v-if="posts.length" @intersect="fetchNextSet" />
     </div>
   </div>
 </template>
